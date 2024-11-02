@@ -1,0 +1,6 @@
+echo "password" | docker secret create postgres_password -
+echo "pixladmin" | docker secret create postgres_user -
+docker network create --driver overlay postgres_network
+docker network ls
+echo "admin@pixlpos.com" | docker secret create pgadmin_email -
+echo "SecureP@ssw0rd!" | docker secret create pgadmin_password -
