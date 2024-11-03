@@ -43,5 +43,5 @@ jobs:
       - name: Upload Jar File
         uses: actions/upload-artifact@v4
         with:
-          name: PIXL-API${{ env.TAG_NAME }}.jar
+          name: PIXL-API-${{ env.TAG_NAME }}
           path: build/libs/PIXL-POS-1.0-SNAPSHOT.jar
