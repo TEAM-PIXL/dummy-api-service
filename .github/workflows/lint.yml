@@ -48,27 +48,42 @@ jobs:
 
       - name: Run Checkstyle and save output
         run: |
-          java -jar /usr/local/bin/checkstyle.jar -c /usr/local/bin/google_checks.xml src/ > checkstyle-result.txt 2>&1
+          mkdir checkstyle-output
+          java -jar /usr/local/bin/checkstyle.jar -c /usr/local/bin/google_checks.xml src/ > checkstyle-output/checkstyle-result.txt 2>&1
         continue-on-error: true
 
       - name: Output Checkstyle Result
         run: |
-          cat checkstyle-result.txt
+          cat checkstyle-output/checkstyle-result.txt
 
       - name: Parse Checkstyle output for warnings and errors
         id: parse_checkstyle
         run: |
-          errors=$(grep -c '^\[ERROR\]' checkstyle-result.txt || true)
-          warnings=$(grep -c '^\[WARN\]' checkstyle-result.txt || true)
-          echo "Warnings: $warnings"
-          echo "Errors: $errors"
+          errors=$(grep -c '^\[ERROR\]' checkstyle-output/checkstyle-result.txt || true)
+          warnings=$(grep -c '^\[WARN\]' checkstyle-output/checkstyle-result.txt || true)
+          echo "Warnings: $warnings" >> checkstyle-output/checkstyle-summary.txt
+          echo "Errors: $errors" >> checkstyle-output/checkstyle-summary.txt
           echo "errors=$errors" >> $GITHUB_ENV
+
+      - name: Create Dynamic Tag
+        id: create_tag
+        shell: pwsh
+        run: |
+          $BRANCH_NAME = $env:GITHUB_REF -replace '^refs/heads/', ''
+          $COMMIT_HASH = (git rev-parse --short HEAD).Trim()
+          echo "TAG_NAME=release-$BRANCH_NAME-$COMMIT_HASH" >> $env:GITHUB_ENV
+
+      - name: Upload Checkstyle Result
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-${{ env.TAG_NAME }}
+          path: checkstyle-output/
 
       - name: Display Checkstyle Errors
         if: env.errors != '0'
         run: |
           echo "### Checkstyle Errors:"
-          grep '^\[ERROR\]' checkstyle-result.txt
+          grep '^\[ERROR\]' checkstyle-output/checkstyle-result.txt
 
       - name: Fail if any errors
         run: |
