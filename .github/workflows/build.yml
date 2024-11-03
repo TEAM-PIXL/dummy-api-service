@@ -1,0 +1,47 @@
+name: Build
+
+on:
+  workflow_call:
+    outputs:
+      success:
+        description: 'Whether the build job succeeded.'
+        value: ${{ jobs.build.outputs.success }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      success: ${{ job.status == 'success' }}
+
+    env:
+      SEGMENT_DOWNLOAD_TIMEOUT_MINS: '5'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (Amazon Corretto)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Build with gradle
+        id: build
+        run: ./gradlew build --no-daemon
+
+      - name: Create Dynamic Tag
+        id: create_tag
+        shell: pwsh
+        run: |
+          $BRANCH_NAME = $env:GITHUB_REF -replace '^refs/heads/', ''
+          $COMMIT_HASH = (git rev-parse --short HEAD).Trim()
+          echo "TAG_NAME=release-$BRANCH_NAME-$COMMIT_HASH" >> $env:GITHUB_ENV
+
+      - name: Upload Jar File
+        uses: actions/upload-artifact@v4
+        with:
+          name: PIXL-API${{ env.TAG_NAME }}.jar
+          path: build/libs/PIXL-POS1.0-SNAPSHOT.jar
