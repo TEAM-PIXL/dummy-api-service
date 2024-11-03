@@ -1,0 +1,69 @@
+networks:
+  app-network:
+    driver: overlay
+    attachable: true
+
+services:
+  mysql-server:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment: # Consider save env configuration for secrets?
+      MYSQL_DATABASE: 'test_db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password1'
+    networks:
+      - app-network
+    volumes:
+      - my-db:/var/lib/mysql
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "8G"
+        reservations:
+          cpus: "0.5"
+          memory: "2G"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    depends_on:
+      - app-network
+
+  mysql_workbench: # Network issues, failing to ping db? Cannot connect to db over 127.0.0.1:3306 from MySQL Dash VNC?
+    image: lscr.io/linuxserver/mysql-workbench:latest
+    container_name: mysql-workbench
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    ports:
+      - 3000:3000
+      - 3001:3001
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "4G"
+        reservations:
+          cpus: "0.5"
+          memory: "2G"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    depends_on:
+      - app-network
+
+volumes: # Add MySQL VNC workbench volumes?
+  my-db:

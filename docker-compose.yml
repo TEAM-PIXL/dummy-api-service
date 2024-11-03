@@ -1,3 +1,4 @@
+# Compose deployment yaml for postgres, pgadmin and spring api application.
 services:
   db:
     image: postgres
@@ -10,6 +11,7 @@ services:
       POSTGRES_PASSWORD: strong-password
     volumes:
       - local_pgdata:/var/lib/postgresql/data
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
@@ -21,6 +23,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: strong-password
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
   spring-app:
     image: spring-test:latest
     container_name: spring-test
