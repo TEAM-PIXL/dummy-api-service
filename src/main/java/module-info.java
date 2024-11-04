@@ -31,5 +31,4 @@ module PIXL.POS.main {
     exports teampixl.com.global.exceptions;
     exports teampixl.com.controllers;
     exports teampixl.com.services;
-
 }

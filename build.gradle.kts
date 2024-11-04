@@ -23,7 +23,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -39,23 +39,23 @@ tasks.test {
 }
 
 /* FORCE DELETE BUILD DIR -- GOOD TO PREVENT BUILD ISSUES WITH CLOUD */
-tasks.register<Exec>("deleteBuildDir") {
-    val os = OperatingSystem.current()
-    val buildDirPath = layout.buildDirectory.get().asFile.absolutePath
-
-    if (os.isWindows) {
-        commandLine("cmd", "/c", "rmdir", "/s", "/q", "\"$buildDirPath\"")
-    } else {
-        commandLine("rm", "-rf", buildDirPath)
-    }
-}
-
-tasks.named("compileKotlin") {
-    dependsOn("deleteBuildDir")
-}
-
-tasks.named("compileJava") {
-    dependsOn("deleteBuildDir")
-}
+//tasks.register<Exec>("deleteBuildDir") {
+//    val os = OperatingSystem.current()
+//    val buildDirPath = layout.buildDirectory.get().asFile.absolutePath
+//
+//    if (os.isWindows) {
+//        commandLine("cmd", "/c", "rmdir", "/s", "/q", "\"$buildDirPath\"")
+//    } else {
+//        commandLine("rm", "-rf", buildDirPath)
+//    }
+//}
+//
+//tasks.named("compileKotlin") {
+//    dependsOn("deleteBuildDir")
+//}
+//
+//tasks.named("compileJava") {
+//    dependsOn("deleteBuildDir")
+//}
 
 

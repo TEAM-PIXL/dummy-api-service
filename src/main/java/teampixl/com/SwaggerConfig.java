@@ -1,32 +1,30 @@
 package teampixl.com;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import org.springdoc.core.GroupedOpenApi;
+import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/*=========================================================================================================================================
-TO-DO:
-- Local Swagger UI configuration for API to be able to interact with endpoints and manipulate post bodies.
-
-==========================================================================================================================================*/
 @Configuration
 public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("API Documentation")
-                        .version("1.0.0")
-                        .description("API documentation for the application"));
-    }
-
-    @Bean
-    public GroupedOpenApi publicApi() {
-        return GroupedOpenApi.builder()
-                .group("public")
-                .pathsToMatch("/**")
-                .build();
+                .info(new Info()
+                        .title("PXIL-POS REST API")
+                        .description("Welcome to the PIXL-POS API Service (!!!NOT FOR PRODUCTION!!!)")
+                        .version("0.0")
+                        .contact(new Contact()
+                                .name("PIXL-API GitHub")
+                                .url("https://github.com/TEAM-PIXL/PIXL-POS")
+                                .email("team-pixl@outlook.com"))
+                        .license(new License()
+                                .name("Apache License Version 2.0")
+                                .url("https://www.apache.org/licenses/LICENSE-2.0")));
     }
 }
+
+
